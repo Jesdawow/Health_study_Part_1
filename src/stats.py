@@ -42,12 +42,27 @@ def ci_mean_boostrap(data, alpha: float = 0.05, n_boot: int = 5000, seed: int = 
     return (float(lower), float(upper))
 
 def welch_t_test(x, y):
-    x = np.asarray(x, dtype=float) # type: ignore[arg-type]
-    x = x[~np.isnan(x)]
-    y = np.asarray(y, dtype=float) # type: ignore[arg-type]
-    y = y[~np.isnan(y)]
-    t_stat, p_val = stats.ttest_ind(x, y, equal_var=False, nan_policy='omit')
-    return float(t_stat), float(p_val)
+    x = _clean_array(x)
+    y = _clean_array(y)
+
+    nx, ny = x.size, y.size
+    if nx < 2 or ny < 2:
+        return (np.nan, np.nan)
+    mx, my = x.mean(), y.mean()
+    vx, vy = x.var(ddof=1), y.var(ddof=1)
+
+    se = np.sqrt(vx / nx + vy / ny)
+    if se == 0:
+        return (np.nan, np.nan)
+    
+    t = (mx - my) / se
+
+    num = (vx / nx + vy / ny) ** 2
+    den = (vx ** 2) / ((nx ** 2) * (nx -1)) + (vy **2) / ((ny **2) * (ny -1))
+    df = num / den if den > 0 else np.nan
+
+    p_two = 2 * (1 - stats.t.cdf(abs(t), df))
+    return (float(t), float(p_two))
 
 def bootstrap_mean_diff_pvalue(x, y, n_boot: int = 5000, seed: int = 42, alternative: str = "greater") -> float:
     rng = np.random.default_rng(seed)
