@@ -6,7 +6,7 @@ CAT_COLUMS = ["sex", "smoker"]
 REQUIRED = NUMERIC + CAT_COLUMS + ["disease"]
 
 def load_data(path=HEALTH_FILE) -> pd.DataFrame:
-    # Reads the CSV file as a dataframe & checks the data
+    # Reads the CSV file as a dataframe & checks the data has the required columns
     df = pd.read_csv(path)
     missing = [c for c in REQUIRED if c not in df.columns]
     if missing:

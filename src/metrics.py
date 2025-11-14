@@ -18,15 +18,15 @@ def descriptive_stats(df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).set_index("metric")
 
 def smoker_share(df: pd.DataFrame) -> float:
-    #Number of smokers (YES/NO) in the "smoker" column
+    # Number of smokers (YES/NO) in the "smoker" column
     s = df["smoker"].astype(str).str.lower()
     return float((s == "yes").mean())
 
 def disease_share(df: pd.DataFrame) -> float:
-    #Number of people with diseases (0/1) in the disease column
+    # Number of people with diseases (0/1) in the disease column
     d = df["disease"].dropna().astype(int).to_numpy()
     return float(np.mean(d))
 
 def group_mean(df: pd.DataFrame, value_col: str, by_col: str) -> pd.Series:
-    #Mean per group
+    # Mean per group in by_col for the value_col
     return df.groupby(by_col, observed=True)[value_col].mean().sort_values(ascending=False)
