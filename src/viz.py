@@ -17,6 +17,7 @@ def hist_bp(df: pd.DataFrame) -> None:
     plt.title("Histogram of Systolic Blood Pressure")
     plt.xlabel("Systolic Blood Pressure (mm Hg)")
     plt.ylabel("Frequency")
+    plt.tight_layout()
     plt.savefig(IMAGES_DIR / "hist_systolic_bp.png", dpi=200)
     plt.show()
 
