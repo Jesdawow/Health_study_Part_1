@@ -81,3 +81,23 @@ def bar_mean_bp_smoker(df: pd.DataFrame) -> None:
     plt.tight_layout()
     plt.savefig(IMAGES_DIR / "bar_mean_bp_smoker.png", dpi=200)
     plt.show()
+
+def scatter_bp_vs_age_with_line(df: pd.DataFrame, y_hat: np.ndarray, idx) -> None:
+    # Scatter plot of systolic blood pressure vs age with regression line
+    x = df.loc[idx,"age"].to_numpy(dtype=float)
+    y = df.loc[idx,"systolic_bp"].to_numpy(dtype=float)
+
+    order = np.argsort(x)
+    x_sorted = x[order]
+    y_hat_sorted = y_hat[order]
+
+    plt.figure(figsize=(7, 5))
+    plt.scatter(x, y, alpha=0.4, s=15, edgecolors="w", label="Data")
+    plt.plot(x_sorted, y_hat_sorted, color="red", linewidth=2, label="Regression Line")
+    plt.title("Systolic BP vs Age with Regression Line")
+    plt.xlabel("Age (years)")
+    plt.ylabel("Systolic BP (mm Hg)")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(IMAGES_DIR / "scatter_bp_vs_age_with_line.png", dpi=200)
+    plt.show()
