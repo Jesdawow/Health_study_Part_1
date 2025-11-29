@@ -6,10 +6,17 @@ from src.paths import IMAGES_DIR
 from src.metrics import group_mean
 
 def _plain_y(ax):
+    """
+    Set y-axis to plain number format (no scientific notation)
+    """
     ax.ticklabel_format(style="plain", axis="y")
 
 def hist_bp(df: pd.DataFrame) -> None:
-    # Histogram of systolic blood pressure
+    """
+    Plot histogram of systolic blood pressure
+    Args:
+        df: DataFrame with "systolic_bp" column
+    """
     vals = df["systolic_bp"].dropna().to_numpy()
 
     plt.figure(figsize=(8, 5))
@@ -22,7 +29,11 @@ def hist_bp(df: pd.DataFrame) -> None:
     plt.show()
 
 def box_weight_by_sex(df: pd.DataFrame) -> None:
-    # Box plot of weight by sex
+    """
+    Plots a boxplot ofweight, split by sex (M/F)
+    Args:
+        df: DataFrame with "weight" and "sex" columns"
+    """
     m = df.loc[df["sex"].astype(str) == "M", "weight"].dropna().to_numpy()
     f = df.loc[df["sex"].astype(str) == "F", "weight"].dropna().to_numpy()
 
@@ -36,7 +47,11 @@ def box_weight_by_sex(df: pd.DataFrame) -> None:
     plt.show()
 
 def bar_smoker_share(df: pd.DataFrame) -> None:
-    # Bar chart of smoker share
+    """
+    Bar chart of share of smokers in the dataset
+    Arg:
+        df: DataFrame with "smoker" column
+    """
     s = df["smoker"].astype(str).str.title()
     shares = (s.value_counts(normalize=True).sort_index() * 100)
 
@@ -53,7 +68,11 @@ def bar_smoker_share(df: pd.DataFrame) -> None:
     plt.show()
 
 def scatter_bp_vs_age(df: pd.DataFrame) -> None:
-    # Scatter plot of systolic blood pressure vs age
+    """
+    Scatter plot of systolic blood pressure vs age
+    Args:
+        df: DataFrame with "systolic_bp" and "age" columns
+    """
     x = df["age"].to_numpy()
     y = df["systolic_bp"].to_numpy()
 
@@ -67,7 +86,11 @@ def scatter_bp_vs_age(df: pd.DataFrame) -> None:
     plt.show()
 
 def bar_mean_bp_smoker(df: pd.DataFrame) -> None:
-    # Bar chart of mean systolic blood pressure by smoker status
+    """
+    Bar chart of mean systolic blood pressure by smoker status
+    Args:
+        df: DataFrame with "systolic_bp" and "smoker" columns
+    """
     means = group_mean(df, "systolic_bp", "smoker")
 
     x = list(means.index.astype(str))
@@ -83,7 +106,13 @@ def bar_mean_bp_smoker(df: pd.DataFrame) -> None:
     plt.show()
 
 def scatter_bp_vs_age_with_line(df: pd.DataFrame, y_hat: np.ndarray, idx) -> None:
-    # Scatter plot of systolic blood pressure vs age with regression line
+    """
+    Scatter plot of systolic blood pressure vs age with regression line
+    Args:
+        df: DataFrame with "systolic_bp" and "age" columns
+        y_hat: Fitted systolic blood pressure values from regression
+        idx: Index of rows used in regression (to align y_hat with df)
+    """
     x = df.loc[idx,"age"].to_numpy(dtype=float)
     y = df.loc[idx,"systolic_bp"].to_numpy(dtype=float)
 

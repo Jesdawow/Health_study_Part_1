@@ -2,7 +2,16 @@ import numpy as np
 import pandas as pd
 
 def make_bp_regression_data(df: pd.DataFrame):
-    # Builds design matrix X and target vector y for predicting systolic blood pressure from age and weight
+    """
+    Prepare data for OLS regression predicting systolic blood pressure from age and weight.
+    Args:
+        df: DataFrame with "systolic_bp", "age", and "weight" columns
+    Returns:
+        X: Design matrix (numpy ndarray) with intercept, age, and weight
+        y: Target vector (numpy ndarray) with systolic blood pressure
+        feature_names: List of feature names corresponding to columns in X
+        idx: Index of rows used in regression (for plotting)
+    """
     cols = ["age", "weight"]
     clean = df.dropna(subset=cols + ["systolic_bp"]).copy()
 
@@ -13,10 +22,18 @@ def make_bp_regression_data(df: pd.DataFrame):
     feature_names = ["intercept"] + cols
 
     return X, y, feature_names, clean.index
-    # Returns x: design matrix, y: target vector, feature_names: list of feature names, index: index of rows used (for plotting)
 
 def ols_fit(X: np.ndarray, y: np.ndarray):
-    # Ordinary Least Squares (OLS) regression via matrix algebra 
+    """
+    Fit OLS regression using matrix algebra.
+    Args:
+        X: Design matrix (numpy ndarray)
+        y: Target vector (numpy ndarray)
+    Returns:
+        beta: Coefficient vector (numpy ndarray)
+        y_hat: Fitted values (numpy ndarray)
+        residuals: Residuals (numpy ndarray)
+    """
     XtX = X.T @ X
     Xty = X.T @ y
 
@@ -25,4 +42,3 @@ def ols_fit(X: np.ndarray, y: np.ndarray):
     residuals = y - y_hat
 
     return beta, y_hat, residuals
-    # Returns beta: coefficient vector, y_hat: fitted values, residuals: y - y_hat

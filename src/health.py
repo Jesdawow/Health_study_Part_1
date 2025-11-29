@@ -15,7 +15,19 @@ from src import models
 DEFAULT_SEED = 42
 
 class HealthAnalysis:
-# A class for analyzing health study data
+    """
+    Main class for health study analysis.
+
+    Responsibilities:
+    - Load and clean the data
+    - Provide methods for descriptive statistics
+    - Compute disease rates
+    - Simulate disease occurrence
+    - Compute confidence intervals for systolic blood pressure
+    - Perform t-tests comparing smokers and non-smokers
+    - Simulate statistical power for detecting differences
+    - Fit OLS regression models predicting systolic blood pressure from age and weight
+   """
     
     def __init__(self, path: Path | None = None, seed: int = DEFAULT_SEED):
         # Initializes the HealthAnalysis class with data loaded and types coerced
@@ -27,15 +39,21 @@ class HealthAnalysis:
         self.rng = np.random.default_rng(seed)
     
     def descriptive(self) -> pd.DataFrame:
-        # Descriptive stats for each numeric column (mean, median, min, max)
+        """
+        Return means, medians, mins, and maxes for selected numeric columns.
+        """
         return descriptive_stats(self.df)
     
     def disease_rate(self) -> float:
-        # Proportion of people with a disease
+        """
+        Compute the share of participants with a disease = 1
+        """
         return disease_share(self.df)
     
     def simulate_disease(self, n: int = 1000) -> float:
-        # Simulates disease/no disease for n number of individuals based on observed disease rate
+        """
+        Simulate n participants with disease/no disease based on observed disease rate.
+        """
         p = self.disease_rate()
         sims = self.rng.binomial(1, p, size=n)
         return float(np.mean(sims))
@@ -56,7 +74,13 @@ class HealthAnalysis:
         return ci_mean_bootstrap(x, alpha=alpha, n_boot=n_boot, seed=DEFAULT_SEED)
     
     def smoker_bp_ttests(self):
-        # Welch's t-test and bootstrap p-value for difference in mean systolic blood pressure between smokers and non-smokers
+        """
+        Perform Welch's t-test and bootstrap test comparing systolic blood pressure
+        Returns:
+            t_stat: t-statistic from Welch's t-test
+            p_two: two-sided p-value from Welch's t-test
+            p_boot: p-value from bootstrap test
+        """
         mask_smoker = self.df["smoker"].astype(str).str.lower() == "yes"
 
         x = self.df.loc[mask_smoker, "systolic_bp"].dropna().to_numpy()
@@ -67,7 +91,9 @@ class HealthAnalysis:
         return t_stat, p_two, p_boot
     
     def simulate_power(self, delta: float = 5.0, n_sim: int = 300, alpha: float = 0.05) -> float:
-        # Simulates power for detecting a difference in mean systolic blood pressure between smokers and non-smokers (The one I forgot in Part 1)
+        """
+        Estimate test power when smokers truly have higher systolic blood pressure by 'delta' mm Hg.
+        """
         base = self.df.copy()
         count = 0
         for _ in range(n_sim):
@@ -84,7 +110,10 @@ class HealthAnalysis:
         return count / n_sim
     
     def fit_bp_regression(self):
-        # OLS regression predicting systolic blood pressure from age and weight, using matrix algebra (no statsmodels)
+        """
+        Fit a linear regression model predicting systolic blood pressure from age and weight.
+        Uses explicit matrix algebra (X'X)^{-1}X'y.
+        """
         X, y, feature_names, idx = models.make_bp_regression_data(self.df)
         beta, y_hat, residuals = models.ols_fit(X, y)
 

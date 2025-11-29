@@ -2,12 +2,28 @@ import numpy as np
 from scipy import stats
 
 def _clean_array(data):
+    """
+    Convert input to a 1D float NumPy array and drops NaN values.
+    Args:
+        data: Any array-like input (list, pd.Series, np.ndarray)
+    Returns:
+        A 1D NumPy array of floats with NaN values removed.
+    """
     # Removes NaN values and ensures data is a numpy array of floats
     x = np.asarray(data, dtype=float)
     return x[~np.isnan(x)]
 
 def ci_mean_normal(data, alpha: float = 0.05):
-    # Confidence interval for the mean using normal approximation
+    """
+    Confidence interval for the mean using normal approximation
+    Uses:
+         mean ± z_(1 - alpha/2) * (s / sqrt(n))
+    Args:
+        data: Sample data (array-like)
+        alpha: Significance level (default 0.05 for 95% CI)
+    Returns:
+        Tuple (lower_bound, upper_bound) with the confidence interval
+    """
     x = _clean_array(data)
     n = x.size
     if n == 0:
@@ -19,7 +35,16 @@ def ci_mean_normal(data, alpha: float = 0.05):
     return (mean - margin, mean + margin)
 
 def ci_mean_t(data, alpha : float = 0.05):
-    # Confidence interval for the mean using t-distribution
+    """
+    Confidence interval for the mean using t-distribution
+    Uses:
+         mean ± t_(1 - alpha/2, df=n-1) * (s / sqrt(n))
+    Args:
+        data: Sample data (array-like)
+        alpha: Significance level (default 0.05 for 95% CI)
+    Returns:
+        Tuple (lower_bound, upper_bound) with the confidence interval
+    """
     x = _clean_array(data)
     n = x.size
     if n == 0:
@@ -31,7 +56,16 @@ def ci_mean_t(data, alpha : float = 0.05):
     return (mean - margin, mean + margin)
 
 def ci_mean_bootstrap(data, alpha: float = 0.05, n_boot: int = 5000, seed: int = 42):
-    # Confidence interval for the mean using bootstrap resampling
+    """
+    Confidence interval for the mean using bootstrap resampling
+    Args:
+        data: Sample data (array-like).
+        alpha: Significance level (default 0.05 for 95% CI).
+        n_boot: Number of bootstrap samples.
+        seed: Random seed for reproducibility.
+    Returns:
+        Tuple (lower_bound, upper_bound) with bootstrap confidence interval bounds.
+    """
     rng = np.random.default_rng(seed)
     x = _clean_array(data)
     n = x.size
@@ -48,7 +82,14 @@ def ci_mean_bootstrap(data, alpha: float = 0.05, n_boot: int = 5000, seed: int =
     return (float(lower), float(upper))
 
 def welch_t_test(x, y):
-    # Performs Welch's t-test for two independent samples
+    """
+    Welch's t-test for two independent samples with unequal variances.
+    Args:
+        x: First 1 value (array-like).
+        y: Sample 2 values (array-like).
+    Returns:
+        Tuple (t_stat, p_two) where t_stat is the t-statistic and p_two is the two-sided p-value.
+    """
     x = _clean_array(x)
     y = _clean_array(y)
 
@@ -73,7 +114,18 @@ def welch_t_test(x, y):
     return (float(t), float(p_two))
 
 def bootstrap_mean_diff_pvalue(x, y, n_boot: int = 5000, seed: int = 42) -> float:
-    # Bootstrap p-value for difference in means between two samples (mean(x) - mean(y))
+    """
+    Bootstrap p-value for the difference in means between two samples. (mean(x) - mean(y))
+    The null hypothesis is that the two samples come from the same distribution.
+    We resample from the pooled data and compare bootstrap differences to the observed difference.
+    Args:
+        x: Sample 1 values (array-like).
+        y: Sample 2 values (array-like).
+        n_boot: Number of bootstrap samples.
+        seed: Random seed for reproducibility.
+    Returns:
+        One-sided p-value P(d_boot >= d_obs) as a float between 0 and 1.
+    """
     rng = np.random.default_rng(seed)
 
     x = _clean_array(x)
