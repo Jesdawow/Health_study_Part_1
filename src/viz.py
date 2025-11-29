@@ -105,24 +105,24 @@ def bar_mean_bp_smoker(df: pd.DataFrame) -> None:
     plt.savefig(IMAGES_DIR / "bar_mean_bp_smoker.png", dpi=200)
     plt.show()
 
-def scatter_bp_vs_age_with_line(df: pd.DataFrame, y_hat: np.ndarray, idx) -> None:
+def scatter_bp_vs_age_with_line(df: pd.DataFrame, y_hat: np.ndarray, index: np.ndarray | list) -> None:
     """
     Scatter plot of systolic blood pressure vs age with regression line
     Args:
         df: DataFrame with "systolic_bp" and "age" columns
         y_hat: Fitted systolic blood pressure values from regression
-        idx: Index of rows used in regression (to align y_hat with df)
+        index: Index of rows used in regression (to align y_hat with df)
     """
-    x = df.loc[idx,"age"].to_numpy(dtype=float)
-    y = df.loc[idx,"systolic_bp"].to_numpy(dtype=float)
+    age = df.loc[index,"age"].to_numpy(dtype=float)
+    bp = df.loc[index,"systolic_bp"].to_numpy(dtype=float)
 
-    order = np.argsort(x)
-    x_sorted = x[order]
-    y_hat_sorted = y_hat[order]
+    order = np.argsort(age)
+    age_sorted = age[order]
+    y_hat_sorted = np.asarray(y_hat, dtype=float)[order]
 
-    plt.figure(figsize=(7, 5))
-    plt.scatter(x, y, alpha=0.4, s=15, edgecolors="w", label="Data")
-    plt.plot(x_sorted, y_hat_sorted, color="red", linewidth=2, label="Regression Line")
+    plt.figure(figsize=(8, 5))
+    plt.scatter(age, bp, alpha=0.4, s=15, edgecolors="none", label="Data")
+    plt.plot(age_sorted, y_hat_sorted, color="red", linewidth=2, label="Regression Line")
     plt.title("Systolic BP vs Age with Regression Line")
     plt.xlabel("Age (years)")
     plt.ylabel("Systolic BP (mm Hg)")

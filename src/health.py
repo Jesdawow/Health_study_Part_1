@@ -124,3 +124,33 @@ class HealthAnalysis:
             "residuals": residuals,
             "index": idx,
         }
+    def fit_bp_regression_age(self) -> dict:
+        """
+        Fit a linear regression model predicting systolic blood pressure from age only.
+        Returns:
+            Dictionary with keys:
+            - "beta": Coefficient vector (intercept and slope)
+            - "feature_names": List of feature names
+            - "y_hat": Fitted values
+            - "residuals": Residuals
+            - "index": Index of rows used in regression
+        """
+        df = self.df.dropna(subset=["systolic_bp", "age"]).copy()
+
+        age = df["age"].to_numpy(dtype=float)
+        y = df["systolic_bp"].to_numpy(dtype=float)
+
+        X = np.column_stack([np.ones_like(age), age])
+
+        beta, *_ = np.linalg.lstsq(X, y, rcond=None)
+        intercept, slope = beta
+
+        y_hat = intercept + slope * age
+        residuals = y - y_hat
+        return {
+            "beta": beta,
+            "feature_names": ["intercept", "age"],
+            "y_hat": y_hat,
+            "residuals": residuals,
+            "index": df.index.to_numpy(),
+        }
