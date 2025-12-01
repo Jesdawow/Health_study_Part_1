@@ -1,4 +1,4 @@
-# Health_study_Part_1
+# Health_study_Part2
 Part 2 of the Health Study Project
 ```
 health_study_part_1
@@ -22,7 +22,8 @@ health_study_part_1
 │   └── stats.py
 │   └── viz.py
 ├── README.md        
-├── report_del1.ipynb             
+├── report_del1.ipynb
+├── report_del2.ipynb           
 └── requirements.txt
 ```            
 - **Python:** 3.13.7
